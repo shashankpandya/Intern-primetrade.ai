@@ -1,5 +1,37 @@
 # Deployment Guide
 
+## Quick Reference: Where to Add Environment Variables
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  RENDER (Backend)                                       │
+│  Environment Variables:                                 │
+│  • DATABASE_URL                                         │
+│  • JWT_ACCESS_SECRET                                    │
+│  • JWT_REFRESH_SECRET                                   │
+│  • CORS_ORIGIN ← Includes frontend URL                  │
+│  • NODE_ENV=production                                  │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│  VERCEL (Frontend)                                      │
+│  Environment Variables:                                 │
+│  • VITE_API_BASE_URL ← Points to Render backend URL ✓  │
+└─────────────────────────────────────────────────────────┘
+```
+
+## Architecture Flow
+
+```
+User Browser
+    ↓
+Vercel Frontend (https://intern-primetrade-ai-aeqq.vercel.app)
+    ↓ (uses VITE_API_BASE_URL env var)
+Render Backend (https://intern-primetrade-api.onrender.com)
+    ↓ (checks CORS_ORIGIN)
+Supabase PostgreSQL
+```
+
 This guide covers deploying both the backend API and React frontend to production.
 
 ## Current Deployment Status
@@ -74,34 +106,68 @@ The backend needs to be deployed to a service that supports Node.js. Options inc
    flyctl secrets set CORS_ORIGIN="https://intern-primetrade-ai-aeqq.vercel.app,http://localhost:5173"
    ```
 
-## Step 2: Update Frontend with Backend URL
+## Step 2: Copy Your Render Backend URL
 
-Once backend is deployed, update frontend environment:
+After Render deployment completes:
 
-1. **In Vercel Dashboard**
-   - Go to Project Settings → Environment Variables
-   - Add: `VITE_API_BASE_URL` = `https://your-backend-api.onrender.com/api/v1`
+1. Go to your Render service: https://dashboard.render.com/services
+2. Click on `intern-primetrade-api`
+3. Copy the URL shown at top (e.g., `https://intern-primetrade-api.onrender.com`)
+4. **Note this URL - you'll use it next**
 
-2. **Or in local .env.local** (for local testing):
+## Step 3: Update Frontend with Backend URL in Vercel
+
+Once you have your Render backend URL:
+
+1. **Go to Vercel Dashboard**
+   - Open https://vercel.com/dashboard
+   - Click on `intern-primetrade-ai` project
+   - Click "Settings" tab
+   - Go to "Environment Variables"
+
+2. **Add the Backend URL**
+   - Key: `VITE_API_BASE_URL`
+   - Value: `https://your-backend-url.onrender.com/api/v1` (replace with your actual Render URL)
+   - Example: `https://intern-primetrade-api.onrender.com/api/v1`
+
+3. **Redeploy Frontend**
+   - Go to "Deployments" tab
+   - Click the three dots (...) on latest deployment
+   - Select "Redeploy"
+   - Wait for redeploy to complete
+
+4. **For local testing** (optional):
+   - Create `frontend/.env.local`:
    ```
-   VITE_API_BASE_URL=http://localhost:5000/api/v1
+   VITE_API_BASE_URL=https://your-backend-url.onrender.com/api/v1
    ```
 
-## Step 3: Update Backend CORS
+   - Run `npm run dev:frontend`
 
-In your deployed backend environment variables, update:
+## Step 4: Verify Backend CORS is Set
+
+Make sure your Render backend has this environment variable set (it should already have it from step 1):
 
 ```
 CORS_ORIGIN=https://intern-primetrade-ai-aeqq.vercel.app,http://localhost:5173
 ```
 
-## Step 4: Test Full Stack
+After Vercel redeploys with the new environment variable:
 
 1. Access frontend: https://intern-primetrade-ai-aeqq.vercel.app
 2. Try login with seeded user:
    - Email: `admin@primetrade.ai`
    - Password: `Admin@123`
-3. Create a task to verify API connection
+3. Create a task to verify API connection works
+4. If you get CORS errors, check that:
+   - `VITE_API_BASE_URL` is set correctly in Vercel
+   - `CORS_ORIGIN` includes your Vercel frontend URL in Render
+
+5. Access frontend: https://intern-primetrade-ai-aeqq.vercel.app
+6. Try login with seeded user:
+   - Email: `admin@primetrade.ai`
+   - Password: `Admin@123`
+7. Create a task to verify API connection
 
 ## Troubleshooting
 
