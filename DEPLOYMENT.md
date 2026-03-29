@@ -138,6 +138,7 @@ Once you have your Render backend URL:
 
 4. **For local testing** (optional):
    - Create `frontend/.env.local`:
+
    ```
    VITE_API_BASE_URL=https://your-backend-url.onrender.com/api/v1
    ```
@@ -169,7 +170,56 @@ After Vercel redeploys with the new environment variable:
    - Password: `Admin@123`
 7. Create a task to verify API connection
 
+## Quick Fix for Render Start Command Error
+
+If you see: `Error: Cannot find module '/opt/render/project/src/backend/dist/index.js'`
+
+**Follow these exact steps:**
+
+```
+1. Go to → https://dashboard.render.com
+2. Click → Your service "intern-primetrade-api"
+3. Click → "Settings" tab (left sidebar)
+4. Find → "Start Command" field
+5. Clear it → Delete everything
+6. Paste → node backend/dist/index.js
+7. Save → Click "Save" button
+8. Wait → Render auto-redeploys (2-3 minutes)
+9. Check → Click "Logs" tab to verify it started correctly
+```
+
+**Expected Success Log:**
+
+```
+==> Build successful 🎉
+==> Deploying...
+==> Running 'node backend/dist/index.js'
+Server is running on port 3000
+✅ Backend API ready at https://intern-primetrade-api.onrender.com
+```
+
+---
+
 ## Troubleshooting
+
+### ERROR: Cannot find module '/opt/render/project/src/backend/dist/index.js' (CRITICAL - Fix immediately)
+
+**This means the Start Command in Render is still wrong!**
+
+- **Cause**: Render's dashboard still has old start command configured
+- **Fix**:
+  1. Go to https://dashboard.render.com
+  2. Click `intern-primetrade-api` service
+  3. Click "Settings" tab (NOT Environment - Settings!)
+  4. Find "Start Command" field
+  5. **DELETE everything and replace with exactly:**
+     ```
+     node backend/dist/index.js
+     ```
+  6. Click "Save"
+  7. Render will automatically redeploy with new start command
+
+**Why this fixes it**: The old command was looking for files in wrong location. The correct path from project root is `backend/dist/index.js` (not `src/backend/dist/index.js`)
 
 ### CORS Error: "Access to XMLHttpRequest blocked"
 
