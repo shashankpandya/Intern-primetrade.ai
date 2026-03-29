@@ -1,16 +1,48 @@
 # Deployment Guide
 
+## ⚠️ RENDER ENVIRONMENT VARIABLES - REQUIRED TO SET
+
+You MUST set these in Render's Environment tab:
+
+```
+📌 REQUIRED - Set these exactly:
+
+1. DATABASE_URL
+   postgresql://postgres:Intern-primetrade.ai@db.qqwdxhhetjoqnfwuefpv.supabase.co:5432/postgres?sslmode=require
+
+2. JWT_ACCESS_SECRET
+   [Generate a STRONG random string - 32+ characters - DO NOT use default!]
+
+3. JWT_REFRESH_SECRET
+   [Generate a DIFFERENT STRONG random string - 32+ characters - DO NOT use default!]
+
+4. CORS_ORIGIN
+   https://intern-primetrade-ai-aeqq.vercel.app,http://localhost:5173
+
+5. NODE_ENV
+   production
+
+6. PORT
+   3000
+
+📌 OPTIONAL (Already have defaults - can skip):
+
+- ACCESS_TOKEN_EXPIRES_IN: 15m
+- REFRESH_TOKEN_EXPIRES_IN: 7d
+```
+
 ## Quick Reference: Where to Add Environment Variables
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │  RENDER (Backend)                                       │
 │  Environment Variables:                                 │
-│  • DATABASE_URL                                         │
-│  • JWT_ACCESS_SECRET                                    │
-│  • JWT_REFRESH_SECRET                                   │
-│  • CORS_ORIGIN ← Includes frontend URL                  │
-│  • NODE_ENV=production                                  │
+│  • DATABASE_URL ✅ REQUIRED                             │
+│  • JWT_ACCESS_SECRET ✅ REQUIRED                        │
+│  • JWT_REFRESH_SECRET ✅ REQUIRED                       │
+│  • CORS_ORIGIN ✅ REQUIRED                              │
+│  • NODE_ENV ✅ REQUIRED (set to: production)            │
+│  • PORT ✅ REQUIRED (set to: 3000)                      │
 └─────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────┐
@@ -74,22 +106,24 @@ The backend needs to be deployed to a service that supports Node.js. Options inc
 3. **Set Build & Start Commands (IMPORTANT)**
    - **Build Command**: `cd backend && npm install && npm run build`
    - **Start Command**: `node backend/dist/index.js`
-4. **Set Build & Start Commands (IMPORTANT)**
-   - **Build Command**: `cd backend && npm install && npm run build`
-   - **Start Command**: `node backend/dist/index.js`
    - ⚠️ If you see `yarn` or other values, **replace them** with above exactly
 
-5. **Set Environment Variables**
-   - Database: `DATABASE_URL` = `postgresql://postgres:Intern-primetrade.ai@db.qqwdxhhetjoqnfwuefpv.supabase.co:5432/postgres?sslmode=require`
-   - JWT Secrets:
-     - `JWT_ACCESS_SECRET` = "your-strong-random-string-here"
-     - `JWT_REFRESH_SECRET` = "your-another-random-string-here"
-   - CORS:
-     - `CORS_ORIGIN` = "https://intern-primetrade-ai-aeqq.vercel.app,http://localhost:5173"
-   - `NODE_ENV` = `production`
-   - `PORT` = `3000`
+4. **Set Environment Variables in Render Dashboard**
 
-6. **Deploy**
+   Click "Environment" tab and add these variables **exactly**:
+
+   | Variable                   | Value                                                                                                          | Notes                                      |
+   | -------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+   | `DATABASE_URL`             | `postgresql://postgres:Intern-primetrade.ai@db.qqwdxhhetjoqnfwuefpv.supabase.co:5432/postgres?sslmode=require` | ✅ Copy from backend/.env                  |
+   | `JWT_ACCESS_SECRET`        | Generate a strong random string                                                                                | ⚠️ Change from default! Use 32+ characters |
+   | `JWT_REFRESH_SECRET`       | Generate a different strong random string                                                                      | ⚠️ Change from default! Use 32+ characters |
+   | `CORS_ORIGIN`              | `https://intern-primetrade-ai-aeqq.vercel.app,http://localhost:5173`                                           | ✅ Include Vercel frontend URL             |
+   | `NODE_ENV`                 | `production`                                                                                                   | ✅ Not development                         |
+   | `PORT`                     | `3000`                                                                                                         | ✅ Render default port                     |
+   | `ACCESS_TOKEN_EXPIRES_IN`  | `15m`                                                                                                          | ✅ Optional - token expiry                 |
+   | `REFRESH_TOKEN_EXPIRES_IN` | `7d`                                                                                                           | ✅ Optional - refresh token expiry         |
+
+5. **Deploy**
    - Click "Create Web Service"
    - Render will deploy (takes 2-5 minutes)
    - Copy the deployed URL (e.g., https://intern-primetrade-api.onrender.com)
