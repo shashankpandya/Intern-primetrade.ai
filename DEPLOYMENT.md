@@ -20,6 +20,20 @@
 └─────────────────────────────────────────────────────────┘
 ```
 
+## Quick Reference: Render Build & Start Commands
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  RENDER BUILD & START COMMANDS                          │
+└─────────────────────────────────────────────────────────┘
+
+Build Command:
+  cd backend && npm install && npm run build
+
+Start Command:
+  node backend/dist/index.js
+```
+
 ## Architecture Flow
 
 ```
@@ -56,10 +70,16 @@ The backend needs to be deployed to a service that supports Node.js. Options inc
    - Select repository
    - Name: `intern-primetrade-api`
    - Environment: `Node`
-   - Build Command: `cd backend && npm install && npm run build`
-   - Start Command: `node backend/dist/index.js`
 
-3. **Set Environment Variables**
+3. **Set Build & Start Commands (IMPORTANT)**
+   - **Build Command**: `cd backend && npm install && npm run build`
+   - **Start Command**: `node backend/dist/index.js`
+4. **Set Build & Start Commands (IMPORTANT)**
+   - **Build Command**: `cd backend && npm install && npm run build`
+   - **Start Command**: `node backend/dist/index.js`
+   - ⚠️ If you see `yarn` or other values, **replace them** with above exactly
+
+5. **Set Environment Variables**
    - Database: `DATABASE_URL` = `postgresql://postgres:Intern-primetrade.ai@db.qqwdxhhetjoqnfwuefpv.supabase.co:5432/postgres?sslmode=require`
    - JWT Secrets:
      - `JWT_ACCESS_SECRET` = "your-strong-random-string-here"
@@ -69,7 +89,7 @@ The backend needs to be deployed to a service that supports Node.js. Options inc
    - `NODE_ENV` = `production`
    - `PORT` = `3000`
 
-4. **Deploy**
+6. **Deploy**
    - Click "Create Web Service"
    - Render will deploy (takes 2-5 minutes)
    - Copy the deployed URL (e.g., https://intern-primetrade-api.onrender.com)
