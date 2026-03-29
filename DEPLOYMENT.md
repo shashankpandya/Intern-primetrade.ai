@@ -25,11 +25,11 @@ The backend needs to be deployed to a service that supports Node.js. Options inc
    - Name: `intern-primetrade-api`
    - Environment: `Node`
    - Build Command: `cd backend && npm install && npm run build`
-   - Start Command: `cd backend && npm run start`
+   - Start Command: `node backend/dist/index.js`
 
 3. **Set Environment Variables**
    - Database: `DATABASE_URL` = `postgresql://postgres:Intern-primetrade.ai@db.qqwdxhhetjoqnfwuefpv.supabase.co:5432/postgres?sslmode=require`
-   - JWT Secrets: 
+   - JWT Secrets:
      - `JWT_ACCESS_SECRET` = "your-strong-random-string-here"
      - `JWT_REFRESH_SECRET` = "your-another-random-string-here"
    - CORS:
@@ -59,6 +59,7 @@ The backend needs to be deployed to a service that supports Node.js. Options inc
 1. **Install Fly CLI**: `brew install flyctl` (or use Windows installer)
 
 2. **Deploy**
+
    ```bash
    flyctl auth login
    flyctl apps create --name intern-primetrade-api
@@ -173,6 +174,7 @@ npm run dev:frontend
 ---
 
 For questions on specific platforms, refer to their documentation:
+
 - [Render Docs](https://render.com/docs)
 - [Railway Docs](https://docs.railway.app)
 - [Fly.io Docs](https://fly.io/docs)
