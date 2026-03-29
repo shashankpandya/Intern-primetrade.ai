@@ -63,7 +63,7 @@ Build Command:
   cd backend && npm install && npm run build
 
 Start Command:
-  node backend/dist/index.js
+   node backend/dist/src/index.js
 ```
 
 ## Architecture Flow
@@ -105,7 +105,7 @@ The backend needs to be deployed to a service that supports Node.js. Options inc
 
 3. **Set Build & Start Commands (IMPORTANT)**
    - **Build Command**: `cd backend && npm install && npm run build`
-   - **Start Command**: `node backend/dist/index.js`
+   - **Start Command**: `node backend/dist/src/index.js`
    - ⚠️ If you see `yarn` or other values, **replace them** with above exactly
 
 4. **Set Environment Variables in Render Dashboard**
@@ -236,7 +236,7 @@ If you see: `Error: Cannot find module '/opt/render/project/src/backend/dist/ind
 3. Click → "Settings" tab (left sidebar)
 4. Find → "Start Command" field
 5. Clear it → Delete everything
-6. Paste → node backend/dist/index.js
+6. Paste → node backend/dist/src/index.js
 7. Save → Click "Save" button
 8. Wait → Render auto-redeploys (2-3 minutes)
 9. Check → Click "Logs" tab to verify it started correctly
@@ -247,7 +247,7 @@ If you see: `Error: Cannot find module '/opt/render/project/src/backend/dist/ind
 ```
 ==> Build successful 🎉
 ==> Deploying...
-==> Running 'node backend/dist/index.js'
+==> Running 'node backend/dist/src/index.js'
 Server is running on port 3000
 ✅ Backend API ready at https://intern-primetrade-api.onrender.com
 ```
@@ -268,12 +268,12 @@ Server is running on port 3000
   4. Find "Start Command" field
   5. **DELETE everything and replace with exactly:**
      ```
-     node backend/dist/index.js
+     node backend/dist/src/index.js
      ```
   6. Click "Save"
   7. Render will automatically redeploy with new start command
 
-**Why this fixes it**: The old command was looking for files in wrong location. The correct path from project root is `backend/dist/index.js` (not `src/backend/dist/index.js`)
+**Why this fixes it**: TypeScript currently compiles into `backend/dist/src/`. The correct path from project root is `backend/dist/src/index.js`.
 
 ### CORS Error: "Access to XMLHttpRequest blocked"
 
