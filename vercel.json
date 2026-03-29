@@ -2,5 +2,15 @@
   "buildCommand": "npm run build:all",
   "outputDirectory": "frontend/dist",
   "framework": "vite",
-  "devCommand": "npm run dev:frontend"
+  "devCommand": "npm run dev:frontend",
+  "rewrites": [
+    {
+      "source": "/api/v1",
+      "destination": "https://intern-primetrade-api.onrender.com/api/v1"
+    },
+    {
+      "source": "/api/v1/(.*)",
+      "destination": "https://intern-primetrade-api.onrender.com/api/v1/$1"
+    }
+  ]
 }
