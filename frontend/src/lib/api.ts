@@ -1,8 +1,14 @@
 import axios from "axios";
 
+const normalizeApiBaseUrl = (url: string): string => {
+  const trimmed = url.trim().replace(/\/+$/, "");
+  if (!trimmed) return "/api/v1";
+  return trimmed.endsWith("/api/v1") ? trimmed : `${trimmed}/api/v1`;
+};
+
 const getApiBaseUrl = (): string => {
   const envUrl = import.meta.env.VITE_API_BASE_URL;
-  if (envUrl) return envUrl;
+  if (envUrl) return normalizeApiBaseUrl(envUrl);
 
   // In production (Vercel), use relative path; locally use localhost
   if (

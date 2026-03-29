@@ -10,11 +10,56 @@ import { openApiSpec } from "./docs/openapi";
 
 const app = express();
 
+const isAllowedOrigin = (origin: string): boolean => {
+  if (env.corsOrigins.includes("*")) {
+    return true;
+  }
+
+  let requestHostname: string;
+  try {
+    requestHostname = new URL(origin).hostname;
+  } catch {
+    return false;
+  }
+
+  return env.corsOrigins.some((allowedOrigin) => {
+    const allowed = allowedOrigin.trim();
+    if (!allowed) {
+      return false;
+    }
+
+    // Exact origin match, including protocol and optional port.
+    if (allowed === origin) {
+      return true;
+    }
+
+    const hostPattern = allowed
+      .replace(/^https?:\/\//, "")
+      .split("/")[0]
+      .trim();
+
+    // Allow host-only exact values such as "localhost:5173".
+    if (hostPattern === requestHostname) {
+      return true;
+    }
+
+    // Support wildcard host patterns such as "*.vercel.app" or "https://*.vercel.app".
+    if (hostPattern.startsWith("*.")) {
+      const suffix = hostPattern.slice(2);
+      return (
+        requestHostname === suffix || requestHostname.endsWith(`.${suffix}`)
+      );
+    }
+
+    return false;
+  });
+};
+
 app.use(helmet());
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || env.corsOrigins.includes(origin)) {
+      if (!origin || isAllowedOrigin(origin)) {
         callback(null, true);
       } else {
         callback(new Error("CORS not allowed"));
