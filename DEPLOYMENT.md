@@ -285,6 +285,19 @@ Server is running on port 3000
 - **Cause**: Frontend is using wrong backend URL
 - **Fix**: Verify `VITE_API_BASE_URL` environment variable in Vercel
 
+### Vercel NOT_FOUND on /login or /dashboard
+
+- **Cause**: React Router (`BrowserRouter`) handles routes client-side, but Vercel needs a rewrite to serve `index.html` for direct URL requests.
+- **Fix**: Add SPA fallback rewrite in `vercel.json`:
+
+   ```json
+   {
+      "rewrites": [
+         { "source": "/(.*)", "destination": "/index.html" }
+      ]
+   }
+   ```
+
 ### Database Connection Error
 
 - **Cause**: `DATABASE_URL` is incorrect or Supabase is down
