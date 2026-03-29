@@ -11,7 +11,17 @@ import { openApiSpec } from "./docs/openapi";
 const app = express();
 
 app.use(helmet());
-app.use(cors({ origin: env.corsOrigin }));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || env.corsOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("CORS not allowed"));
+      }
+    },
+  }),
+);
 app.use(express.json());
 app.use(morgan("dev"));
 
