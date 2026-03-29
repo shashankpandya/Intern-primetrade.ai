@@ -22,6 +22,11 @@ const isAllowedOrigin = (origin: string): boolean => {
     return false;
   }
 
+  // Allow Vercel preview deployments in production without requiring manual CORS updates.
+  if (env.nodeEnv === "production" && requestHostname.endsWith(".vercel.app")) {
+    return true;
+  }
+
   return env.corsOrigins.some((allowedOrigin) => {
     const allowed = allowedOrigin.trim();
     if (!allowed) {
