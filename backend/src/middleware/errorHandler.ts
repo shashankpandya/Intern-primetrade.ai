@@ -37,7 +37,8 @@ export const errorHandler = (
 
   if (err instanceof Prisma.PrismaClientInitializationError) {
     return res.status(503).json({
-      message: "Database connection unavailable. Please try again in a moment.",
+      message:
+        "Database connection unavailable. Check DATABASE_URL, Supabase status, and network access.",
     });
   }
 

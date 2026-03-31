@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import { env } from "./config/env";
+import { checkDatabaseConnection } from "./config/prisma";
 import v1Routes from "./routes/v1";
 import { errorHandler, notFound } from "./middleware/errorHandler";
 import { openApiSpec } from "./docs/openapi";
@@ -96,6 +97,19 @@ app.use(morgan("dev"));
 
 app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok" });
+});
+
+app.get("/health/db", async (_req, res) => {
+  const connected = await checkDatabaseConnection();
+  if (!connected) {
+    return res.status(503).json({
+      status: "error",
+      message:
+        "Database connection unavailable. Check DATABASE_URL, Supabase status, and network access.",
+    });
+  }
+
+  return res.status(200).json({ status: "ok" });
 });
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openApiSpec));
