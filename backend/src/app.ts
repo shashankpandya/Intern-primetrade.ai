@@ -22,6 +22,14 @@ const isAllowedOrigin = (origin: string): boolean => {
     return false;
   }
 
+  // Allow this project's Vercel production and preview domains.
+  if (
+    requestHostname.endsWith(".vercel.app") &&
+    requestHostname.startsWith("intern-primetrade-ai-aeqq")
+  ) {
+    return true;
+  }
+
   // Allow Vercel preview deployments in production without requiring manual CORS updates.
   if (env.nodeEnv === "production" && requestHostname.endsWith(".vercel.app")) {
     return true;
@@ -43,9 +51,20 @@ const isAllowedOrigin = (origin: string): boolean => {
       .split("/")[0]
       .trim();
 
-    // Allow host-only exact values such as "localhost:5173".
+    // Allow host-only exact values such as "localhost".
     if (hostPattern === requestHostname) {
       return true;
+    }
+
+    // Allow host+port values such as "localhost:5173".
+    if (hostPattern.includes(":")) {
+      const [allowedHost, allowedPort] = hostPattern.split(":");
+      const requestUrl = new URL(origin);
+      const requestPort =
+        requestUrl.port || (requestUrl.protocol === "https:" ? "443" : "80");
+      if (allowedHost === requestUrl.hostname && allowedPort === requestPort) {
+        return true;
+      }
     }
 
     // Support wildcard host patterns such as "*.vercel.app" or "https://*.vercel.app".

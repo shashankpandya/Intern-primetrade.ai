@@ -16,7 +16,10 @@ for (const key of requiredVars) {
 
 const parseCorsOrigins = (): string[] => {
   const corsOrigin = process.env.CORS_ORIGIN ?? "http://localhost:5173";
-  return corsOrigin.split(",").map((origin) => origin.trim());
+  return corsOrigin
+    .split(",")
+    .map((origin) => origin.trim().replace(/^['\"]|['\"]$/g, ""))
+    .filter(Boolean);
 };
 
 export const env = {

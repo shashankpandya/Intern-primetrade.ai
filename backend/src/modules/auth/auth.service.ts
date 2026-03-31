@@ -34,7 +34,12 @@ const parseExpiresInDays = (expires: string) => {
 
 export const authService = {
   async register(name: string, email: string, password: string) {
-    const existing = await prisma.user.findUnique({ where: { email } });
+    const normalizedName = name.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const existing = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
     if (existing) {
       throw new ApiError(409, "Email already exists");
     }
@@ -43,8 +48,8 @@ export const authService = {
 
     const user = await prisma.user.create({
       data: {
-        name,
-        email,
+        name: normalizedName,
+        email: normalizedEmail,
         passwordHash,
       },
     });
@@ -53,7 +58,10 @@ export const authService = {
   },
 
   async login(email: string, password: string) {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    });
     if (!user) {
       throw new ApiError(401, "Invalid credentials");
     }
