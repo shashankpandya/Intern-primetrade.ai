@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { Prisma } from "@prisma/client";
 import { ZodError } from "zod";
 
 export class ApiError extends Error {
@@ -33,6 +34,26 @@ export const errorHandler = (
   if (err instanceof ApiError) {
     return res.status(err.statusCode).json({ message: err.message });
   }
+
+  if (err instanceof Prisma.PrismaClientInitializationError) {
+    return res.status(503).json({
+      message: "Database connection unavailable. Please try again in a moment.",
+    });
+  }
+
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    if (err.code === "P2002") {
+      return res.status(409).json({ message: "Email already exists" });
+    }
+
+    if (err.code === "P2025") {
+      return res.status(404).json({ message: "Requested resource not found" });
+    }
+
+    return res.status(400).json({ message: "Database request failed" });
+  }
+
+  console.error(err);
 
   return res.status(500).json({ message: "Internal server error" });
 };

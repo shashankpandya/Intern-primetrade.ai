@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import { Prisma } from "@prisma/client";
 import { env } from "../../config/env";
 import { prisma } from "../../config/prisma";
 import { ApiError } from "../../middleware/errorHandler";
@@ -37,22 +38,27 @@ export const authService = {
     const normalizedName = name.trim();
     const normalizedEmail = email.trim().toLowerCase();
 
-    const existing = await prisma.user.findUnique({
-      where: { email: normalizedEmail },
-    });
-    if (existing) {
-      throw new ApiError(409, "Email already exists");
-    }
-
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const user = await prisma.user.create({
-      data: {
-        name: normalizedName,
-        email: normalizedEmail,
-        passwordHash,
-      },
-    });
+    let user;
+    try {
+      user = await prisma.user.create({
+        data: {
+          name: normalizedName,
+          email: normalizedEmail,
+          passwordHash,
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        throw new ApiError(409, "Email already exists");
+      }
+
+      throw error;
+    }
 
     return user;
   },
